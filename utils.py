@@ -41,3 +41,7 @@ class PriorityQueue:
         """
         return heapq.heappop(self.elements)[1]
     
+    def items(self):
+        return list(item for _, item in self.elements)
+    
+    

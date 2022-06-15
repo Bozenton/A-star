@@ -1,11 +1,11 @@
-from typing import Protocol, Tuple, TypeVar, Optional, Iterator, List, Dict
+from typing import Tuple, TypeVar, Optional, Iterator, List, Dict
 
 
 # define type for later usage and code hinting of the IDE:
 Position = TypeVar('Position')
 GridPosition = Tuple[int, int]
 
-class Graph(Protocol):
+class Graph():
     """data structure for graph
     """
     def neighbours(self, id: Position) -> List[Position]:
@@ -26,9 +26,9 @@ class Grid:
 
     def neighbours(self, id: GridPosition) -> Iterator[GridPosition]:
         (x, y) = id 
-        nbs = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
-        if (x+y) % 2 == 0:
-            nbs.reverse()
+        nbs = [(x+1, y), (x-1, y), (x, y-1), (x, y+1), (x+1, y+1), (x+1, y-1), (x-1, y+1), (x-1, y-1)]
+        # if (x+y) % 2 == 0:
+        #     nbs.reverse()
         results = filter(self.within_bounds, nbs)
         results = filter(self.passable, results)
         return results
@@ -44,27 +44,31 @@ class WeightedGrid(Grid):
 
 # some useful functions for visulization
 # ↖↑↗←↔→↙↓↘
-def draw_details(graph, id, style):
+def print_details(graph, id, style):
     r = " . "
     if 'number' in style and id in style['number']: r = " %-2d" % style['number'][id]
     if 'point_to' in style and style['point_to'].get(id, None) is not None:
         (x1, y1) = id
         (x2, y2) = style['point_to'][id]
-        if x2 == x1 + 1: r = " → "
-        if x2 == x1 - 1: r = " ← "
-        if y2 == y1 + 1: r = " ↓ "
-        if y2 == y1 - 1: r = " ↑ "
+        if x2 == x1 + 1 and y1 == y2: r = " → "
+        if x2 == x1 - 1 and y1 == y2: r = " ← "
+        if y2 == y1 + 1 and x1 == x2: r = " ↓ "
+        if y2 == y1 - 1 and x1 == x2: r = " ↑ "
+        if x2 == x1 + 1 and y2 == y1 + 1: r = " ↘ "
+        if x2 == x1 + 1 and y2 == y1 - 1: r = " ↗ "
+        if x2 == x1 - 1 and y2 == y1 + 1: r = " ↙ "
+        if x2 == x1 - 1 and y2 == y1 - 1: r = " ↖ "
     if 'path' in style and id in style['path']:   r = " $ "
     if 'start' in style and id == style['start']: r = " A "
     if 'goal' in style and id == style['goal']:   r = " Z "
-    if id in graph.walls: r = "###"
+    if id in graph.walls: r = " # "
     return r
 
-def draw_grid(graph: Grid, **details):
+def print_grid(graph: Grid, **details):
     print("___" * graph.width)
     for y in range(graph.height):
         for x in range(graph.width):
-            print("%s" % draw_details(graph, (x,y), details), end="")
+            print("%s" % print_details(graph, (x,y), details), end="")
         print()
     print("~~~" * graph.width)
 
