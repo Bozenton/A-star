@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 import time
+from time import gmtime, strftime
 
 from graph_engine import WeightedGrid, get_path_trace_back
 from Astar import A_star, A_star_display
@@ -14,11 +16,20 @@ grid = WeightedGrid(10, 10)
 
 prepared_walls1 = [(0, 1),(3, 1),(8, 1),(5, 2),(2, 3),(6, 3),(8, 3),(4, 5),(2, 7),(6, 7),(0, 9),(2, 9),(8, 9)]
 
+save = True
+
 if __name__ == '__main__':
     fig, ax = plt.subplots()
+    if save:
+        folder_name = strftime("%Y-%m-%d-%H-%M-Interactive", gmtime())
+        if not os.path.exists(folder_name):
+            os.system('mkdir '+folder_name)
     
-    tellme('Key click to use prepared map,\nmouse click to select obstacles manually', ax)
     plot_grid(ax, grid)
+    tellme('Key click to use prepared map,\nmouse click to select obstacles manually', ax)
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_begin.png'), bbox_inches='tight', transparent=True, dpi=100)
+    
     flag = plt.waitforbuttonpress()
     if flag == True:
         grid.walls = prepared_walls1
@@ -29,10 +40,16 @@ if __name__ == '__main__':
         obstacle = list(set(obstacle)) # remove repeated elements
         print(repr(obstacle))
         grid.walls = obstacle
+        if save:
+            plt.draw()
+            plt.savefig(os.path.join(folder_name, f'I_select_obstacle.png'), bbox_inches='tight', transparent=True, dpi=100)
     else:
         print("Something wrong happened")
         exit()
     plot_grid(ax, grid) # update image
+    tellme("Grid with obstacles", ax)
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_obstacle.png'), bbox_inches='tight', transparent=True, dpi=100)
 
     pts = []
     while len(pts) < 2:
@@ -42,22 +59,31 @@ if __name__ == '__main__':
         if len(pts) < 2:
             tellme('Too few points selected, starting over', ax)
             time.sleep(0.5) # wait a second
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_select_start_and_goal.png'), bbox_inches='tight', transparent=True, dpi=100)
     start = tuple(pts[0])
     goal = tuple(pts[1])
     plot_grid(ax, grid, start=start, goal=goal) # update image
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_start_and_goal.png'), bbox_inches='tight', transparent=True, dpi=100)
     
     tellme('Key click to see the process,\nmouse click to directly get result', ax)
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_auto_or_manual.png'), bbox_inches='tight', transparent=True, dpi=100)
     flag = plt.waitforbuttonpress()
     tellme('Now A star searching ...', ax)
     if flag == True:    # True if a key was pressed, 
-        came_from, _ = A_star_display(ax, grid, start, goal)
+        came_from, _ = A_star_display(ax, grid, start, goal, save=save)
     elif flag == False: # False if a mouse button was pressed
         came_from, cost = A_star(grid, start, goal)
     else:
         print("Something wrong happened")
         exit()
+    ax.cla()
     plot_grid(ax, grid, point_to=came_from, path=get_path_trace_back(came_from, start, goal), start=start, goal=goal)
     tellme('Finish! Key click or mouse click to exit', ax)
+    if save:
+        plt.savefig(os.path.join(folder_name, f'I_finish.png'), bbox_inches='tight', transparent=True, dpi=100)
     plt.waitforbuttonpress()
     # Wait for user input and return 
     # True if a key was pressed, 

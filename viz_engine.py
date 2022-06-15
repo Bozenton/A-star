@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from graph_engine import Grid 
-COLOR_WALL = (125, 16, 16)
+COLOR_WALL = (16, 16, 16)
 COLOR_PASSABLE = (255, 255, 255)
 COLOR_PATH = (33, 204, 90) # green
 COLOR_SEARCHED = (92, 123, 247) # blue
