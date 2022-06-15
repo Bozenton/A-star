@@ -16,7 +16,7 @@ grid = WeightedGrid(10, 10)
 
 prepared_walls1 = [(0, 1),(3, 1),(8, 1),(5, 2),(2, 3),(6, 3),(8, 3),(4, 5),(2, 7),(6, 7),(0, 9),(2, 9),(8, 9)]
 
-save = True
+save = False
 
 if __name__ == '__main__':
     fig, ax = plt.subplots()
